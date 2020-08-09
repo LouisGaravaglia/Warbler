@@ -132,7 +132,7 @@ def list_users():
 
     return render_template('users/index.html', users=users)
 
-
+# FIXME:
 @app.route('/users/<int:user_id>')
 def users_show(user_id):
     """Show user profile."""
