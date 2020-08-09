@@ -288,7 +288,7 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followed_users
     """
-
+    
     if g.user:
         messages = (Message
                     .query

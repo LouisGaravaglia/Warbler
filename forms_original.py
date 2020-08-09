@@ -13,7 +13,7 @@ class UserAddForm(FlaskForm):
     """Form for adding users."""
 
     username = StringField('Username', validators=[DataRequired()])
-    email = StringField('E-mail', validators=[DataRequired()])
+    email = StringField('E-mail', validators=[DataRequired(), Email(message="Please enter a valid email address.")])
     password = PasswordField('Password', validators=[Length(min=6)])
     image_url = StringField('(Optional) Image URL')
 
