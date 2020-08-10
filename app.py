@@ -37,6 +37,19 @@ def add_user_to_g():
     else:
         g.user = None
 
+# @app.before_request
+# def add_likes_to_g():
+#     """If we're logged in, add curr user to Flask global."""
+
+#     if likes in session:
+#         likes = session[likes]
+#         likes.append(msg_id)
+#         session[likes] = likes
+
+#     else:
+#         likes = [msg_id]
+#         session[likes] = likes
+        
 
 def do_login(user):
     """Log in user."""
@@ -203,6 +216,31 @@ def stop_following(follow_id):
 
     return redirect(f"/users/{g.user.id}/following")
 
+# FIXME:
+@app.route("/users/add_like/<int:message_id>", methods=['POST'])
+def add_like(message_id):
+    """Add the liked message user id to a list."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    liked_message = Message.query.get_or_404(message_id)
+    if liked_message.user_id == g.user.id:
+        flash("You can't like your own warbles.", "danger")
+        return redirect("/")
+    
+    user_likes = g.user.likes
+    
+    if liked_message in user_likes:
+        g.user.likes = [like for like in user_likes if like != liked_message]
+    else:
+        g.user.likes.append(liked_message)
+        
+    db.session.commit()
+
+    return redirect("/")
+
 
 @app.route('/users/profile', methods=["GET", "POST"])
 def profile():
@@ -315,8 +353,10 @@ def homepage():
                     .limit(100)
                     .all())
         following_ids = [f.id for f in g.user.following]
+        
+        likes = [msg.id for msg in g.user.likes]
 
-        return render_template('home.html', messages=messages, following_ids=following_ids)
+        return render_template('home.html', messages=messages, following_ids=following_ids, likes=likes)
 
     else:
         return render_template('home-anon.html')
