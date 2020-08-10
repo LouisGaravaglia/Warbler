@@ -314,8 +314,9 @@ def homepage():
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
+        following_ids = [f.id for f in g.user.following]
 
-        return render_template('home.html', messages=messages)
+        return render_template('home.html', messages=messages, following_ids=following_ids)
 
     else:
         return render_template('home-anon.html')
