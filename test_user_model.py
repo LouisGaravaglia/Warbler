@@ -58,6 +58,24 @@ class UserModelTestCase(TestCase):
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
         
+    def test_repr(self):
+        """Testing to make sure repr method works"""
+        
+        u = User(
+            email="test@test.com",
+            username="testuser",
+            password="HASHED_PASSWORD"
+        )
+
+        db.session.add(u)
+        db.session.commit()
+        user = str(u)
+        
+        self.assertIn(": testuser, test@test.com>", user)
+        
+        
+        
+        
     # QUESTIONS TO MAKE TESTS FOR:
     # Does the repr method work as expected?
     # Does is_following successfully detect when user1 is following user2?
