@@ -61,9 +61,7 @@ class MessageViewTestCase(TestCase):
         self.u2 = u2
         self.uid2 = uid2
         
-        msg = Message(text="My first post", timestamp="11 August 2020")
-        self.u1.messages.append(msg)
-        db.session.commit()
+        
         
         self.client = app.test_client()
         
@@ -95,13 +93,29 @@ class MessageViewTestCase(TestCase):
     #         msg = Message.query.one()
     #         self.assertEqual(msg.text, "Hello")
 
-    def test_profile_page(self):
+    # def test_profile_page(self):
+    #     """ Making sure that the profile page renders the messages correctly after POST. """
+
+    #     with self.client as client:
+    #         res = client.post("/messages/new", data={"text": "Hello"})
+    #         html = res.get_data(as_text=True)
+
+    #         self.assertEqual(res.status_code, 302)
+    #         msg = Message.query.one()
+    #         self.assertEqual(msg.text, "Hello")
+            
+    
+    def test_profile_page2(self):
         """ Making sure that the profile page renders the messages correctly. """
 
         with self.client as client:
+            msg = Message(text="My first post", timestamp="11 August 2020")
+            self.u1.messages.append(msg)
+            db.session.commit()
+            
             res = self.client.get(f"/users/{self.uid1}")
             html = res.get_data(as_text=True)
-
+            
             self.assertEqual(res.status_code, 200)
             self.assertIn("<p>My first post</p>", html)
             self.assertIn('<span class="text-muted">11 August 2020</span>', html)
