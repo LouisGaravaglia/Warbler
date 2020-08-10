@@ -38,6 +38,25 @@ class UserModelTestCase(TestCase):
         User.query.delete()
         Message.query.delete()
         Follows.query.delete()
+        
+        u1 = User.signup("test1", "email1@email.com", "password", None)
+        uid1 = 1111
+        u1.id = uid1
+
+        u2 = User.signup("test2", "email2@email.com", "password", None)
+        uid2 = 2222
+        u2.id = uid2
+
+        db.session.commit()
+
+        u1 = User.query.get(uid1)
+        u2 = User.query.get(uid2)
+
+        self.u1 = u1
+        self.uid1 = uid1
+
+        self.u2 = u2
+        self.uid2 = uid2
 
         self.client = app.test_client()
         
@@ -74,10 +93,18 @@ class UserModelTestCase(TestCase):
         self.assertIn(": testuser, test@test.com>", user)
         
         
+    # def test_is_following(self):
+    #     """Testing to make sure is_following successfully detect when user1 is following user2"""
         
         
-    # QUESTIONS TO MAKE TESTS FOR:
-    # Does the repr method work as expected?
+        
+        
+    #     self.assertIn(": testuser, test@test.com>", user)
+        
+        
+        
+        
+
     # Does is_following successfully detect when user1 is following user2?
     # Does is_following successfully detect when user1 is not following user2?
     # Does is_followed_by successfully detect when user1 is followed by user2?
