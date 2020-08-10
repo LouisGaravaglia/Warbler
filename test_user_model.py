@@ -107,13 +107,26 @@ class UserModelTestCase(TestCase):
         self.assertEqual(self.u2.followers[0].id, self.uid1)
         
         
+    def test_create_user(self):
+        """Testing to make sure I can add a user and authenticate that user"""
         
+        u3 = User.signup("hawk123", "birdsofwar@gmail.com", "kawkaw", None)
+        password = u3.password
+        db.session.commit()
+        
+        
+        self.assertEqual("hawk123", u3.username)
+        self.assertEqual("birdsofwar@gmail.com", u3.email)
+        self.assertEqual(password, u3.password)
+        
+        self.assertTrue(u3.authenticate("hawk123", "kawkaw"))
+        self.assertFalse(u3.authenticate("hawk123", "meow"))
+        self.assertFalse(u3.authenticate("hawk12", "kawkaw"))
         
 
-    # Does is_following successfully detect when user1 is following user2?
-    # Does is_following successfully detect when user1 is not following user2?
-    # Does is_followed_by successfully detect when user1 is followed by user2?
-    # Does is_followed_by successfully detect when user1 is not followed by user2?
+        
+
+
     # Does User.create successfully create a new user given valid credentials?
     # Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?
     # Does User.authenticate successfully return a user when given a valid username and password?
