@@ -42,7 +42,6 @@ class MessageViewTestCase(TestCase):
         User.query.delete()
         Message.query.delete()
 
-        
         u1 = User.signup("newtest1", "newemail1@email.com", "newpassword", None)
         uid1 = 1001
         u1.id = uid1
@@ -52,8 +51,6 @@ class MessageViewTestCase(TestCase):
         u2.id = uid2
 
         db.session.commit()
-        
-
 
         u1 = User.query.get(uid1)
         u2 = User.query.get(uid2)
@@ -98,8 +95,8 @@ class MessageViewTestCase(TestCase):
     #         msg = Message.query.one()
     #         self.assertEqual(msg.text, "Hello")
 
-    def test_home_page(self):
-        """ Making sure that the home page renders correct html. """
+    def test_profile_page(self):
+        """ Making sure that the profile page renders the messages correctly. """
 
         with self.client as client:
             res = self.client.get(f"/users/{self.uid1}")
@@ -107,3 +104,4 @@ class MessageViewTestCase(TestCase):
 
             self.assertEqual(res.status_code, 200)
             self.assertIn("<p>My first post</p>", html)
+            self.assertIn('<span class="text-muted">11 August 2020</span>', html)
