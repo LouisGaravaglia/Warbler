@@ -37,19 +37,6 @@ def add_user_to_g():
     else:
         g.user = None
 
-# @app.before_request
-# def add_likes_to_g():
-#     """If we're logged in, add curr user to Flask global."""
-
-#     if likes in session:
-#         likes = session[likes]
-#         likes.append(msg_id)
-#         session[likes] = likes
-
-#     else:
-#         likes = [msg_id]
-#         session[likes] = likes
-        
 
 def do_login(user):
     """Log in user."""
@@ -160,7 +147,7 @@ def users_show(user_id):
                 .all())
     return render_template('users/show.html', user=user, messages=messages)
 
-# FIXME:
+
 @app.route('/users/likes')
 def show_likes():
     """Show user profile."""
