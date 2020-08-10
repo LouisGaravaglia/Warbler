@@ -93,16 +93,19 @@ class MessageViewTestCase(TestCase):
     #         msg = Message.query.one()
     #         self.assertEqual(msg.text, "Hello")
 
-    # def test_profile_page(self):
-    #     """ Making sure that the profile page renders the messages correctly after POST. """
+    def test_profile_page(self):
+        """ Making sure that the profile page renders the messages correctly after POST. """
 
-    #     with self.client as client:
-    #         res = client.post("/messages/new", data={"text": "Hello"})
-    #         html = res.get_data(as_text=True)
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
+                
+            res = client.post("/messages/new", data={"text": "Hello"})
+            html = res.get_data(as_text=True)
 
-    #         self.assertEqual(res.status_code, 302)
-    #         msg = Message.query.one()
-    #         self.assertEqual(msg.text, "Hello")
+            self.assertEqual(res.status_code, 302)
+            msg = Message.query.filter_by(text='Hello').first()
+            self.assertEqual(msg.text, "Hello")
             
     
     def test_profile_page2(self):
