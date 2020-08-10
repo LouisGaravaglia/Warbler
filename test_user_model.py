@@ -33,6 +33,7 @@ db.create_all()
 class UserModelTestCase(TestCase):
     """Test views for messages."""
 
+
     def setUp(self):
         """Create test client, add sample data."""
 
@@ -68,7 +69,6 @@ class UserModelTestCase(TestCase):
         return res
 
         
-
     def test_user_model(self):
         """Does basic model work?"""
 
@@ -84,6 +84,7 @@ class UserModelTestCase(TestCase):
         # User should have no messages & no followers
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
+        
         
     def test_repr(self):
         """Testing to make sure repr method works"""
@@ -122,7 +123,6 @@ class UserModelTestCase(TestCase):
         password = u3.password
         db.session.commit()
         
-        
         self.assertEqual("hawk123", u3.username)
         self.assertEqual("birdsofwar@gmail.com", u3.email)
         self.assertEqual(password, u3.password)
@@ -130,6 +130,7 @@ class UserModelTestCase(TestCase):
         self.assertTrue(u3.authenticate("hawk123", "kawkaw"))
         self.assertFalse(u3.authenticate("hawk123", "meow"))
         self.assertFalse(u3.authenticate("hawk12", "kawkaw"))
+        
     
     def test_invalid_username_signup(self):
         """Testing to check in an IntegrityError is thrown when a non valild Username is present"""
@@ -161,11 +162,16 @@ class UserModelTestCase(TestCase):
             User.signup("testtest", "email@email.com", None, None)
 
 
-        
+    def test_valid_authentication(self):
+        u = User.authenticate(self.u1.username, "password")
+        self.assertIsNotNone(u)
+        self.assertEqual(u.id, self.uid1)
+    
+    
+    def test_invalid_username(self):
+        self.assertFalse(User.authenticate("badusername", "password"))
 
 
-    # Does User.create successfully create a new user given valid credentials?
-    # Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?
-    # Does User.authenticate successfully return a user when given a valid username and password?
-    # Does User.authenticate fail to return a user when the username is invalid?
-    # Does User.authenticate fail to return a user when the password is invalid?
+    def test_wrong_password(self):
+        self.assertFalse(User.authenticate(self.u1.username, "badpassword"))   
+
