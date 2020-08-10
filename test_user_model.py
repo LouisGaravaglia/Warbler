@@ -15,7 +15,7 @@ from models import db, User, Message, Follows
 # before we import our app, since that will have already
 # connected to the database
 
-os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
+os.environ['DATABASE_URL'] = "postgresql:///warbler_test"
 
 
 # Now we can import app
@@ -40,6 +40,7 @@ class UserModelTestCase(TestCase):
         Follows.query.delete()
 
         self.client = app.test_client()
+        
 
     def test_user_model(self):
         """Does basic model work?"""
@@ -56,3 +57,15 @@ class UserModelTestCase(TestCase):
         # User should have no messages & no followers
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
+        
+    # QUESTIONS TO MAKE TESTS FOR:
+    # Does the repr method work as expected?
+    # Does is_following successfully detect when user1 is following user2?
+    # Does is_following successfully detect when user1 is not following user2?
+    # Does is_followed_by successfully detect when user1 is followed by user2?
+    # Does is_followed_by successfully detect when user1 is not followed by user2?
+    # Does User.create successfully create a new user given valid credentials?
+    # Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?
+    # Does User.authenticate successfully return a user when given a valid username and password?
+    # Does User.authenticate fail to return a user when the username is invalid?
+    # Does User.authenticate fail to return a user when the password is invalid?
