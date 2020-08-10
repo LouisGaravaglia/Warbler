@@ -70,55 +70,85 @@ class MessageViewTestCase(TestCase):
         res = super().tearDown()
         db.session.rollback()
         return res
+    
 
+    # def test_profile_page_with_POST(self):
+    #     """ Making sure that the profile page renders the messages correctly after POST. """
 
-    # def test_add_message(self):
-    #     """Can use add a message?"""
+    #     with self.client as client:
+    #         with client.session_transaction() as sess:
+    #             sess[CURR_USER_KEY] = self.uid1
+                
+    #         res = client.post("/messages/new", data={"text": "Hello"})
+    #         html = res.get_data(as_text=True)
 
-    #     # Since we need to change the session to mimic logging in,
-    #     # we need to use the changing-session trick:
+    #         self.assertEqual(res.status_code, 302)
+    #         msg = Message.query.filter_by(text='Hello').first()
+    #         self.assertEqual(msg.text, "Hello")
+            
+    
+    # def test_profile_page(self):
+    #     """ Making sure that the profile page renders the messages correctly. """
 
+    #     with self.client as client:
+    #         msg = Message(text="My first post", timestamp="11 August 2020")
+    #         self.u1.messages.append(msg)
+    #         db.session.commit()
+            
+    #         res = self.client.get(f"/users/{self.uid1}")
+    #         html = res.get_data(as_text=True)
+            
+    #         self.assertEqual(res.status_code, 200)
+    #         self.assertIn("<p>My first post</p>", html)
+    #         self.assertIn('<span class="text-muted">11 August 2020</span>', html)
+            
+    
+    # def test_add_no_session(self):
+    #     with self.client as client:
+    #         res = client.post("/messages/new", data={"text": "Hello"}, follow_redirects=True)
+    #         self.assertEqual(res.status_code, 200)
+    #         self.assertIn("Access unauthorized", str(res.data))
+            
+            
+    # def test_add_invalid_user(self):
+    #     with self.client as client:
+    #         with client.session_transaction() as sess:
+    #             sess[CURR_USER_KEY] = 43
+
+    #         res = client.post("/messages/new", data={"text": "Hello"}, follow_redirects=True)
+    #         self.assertEqual(res.status_code, 200)
+    #         self.assertIn("Access unauthorized", str(res.data))
+            
+            
+
+            
+    # def test_invalid_message_show(self):
     #     with self.client as c:
     #         with c.session_transaction() as sess:
     #             sess[CURR_USER_KEY] = self.uid1
-
-    #         # Now, that session setting is saved, so we can have
-    #         # the rest of ours test
-
-    #         resp = c.post("/messages/new", data={"text": "Hello"})
-
-    #         # Make sure it redirects
-    #         self.assertEqual(resp.status_code, 302)
-
-    #         msg = Message.query.one()
-    #         self.assertEqual(msg.text, "Hello")
-
-    def test_profile_page(self):
-        """ Making sure that the profile page renders the messages correctly after POST. """
-
-        with self.client as client:
-            with client.session_transaction() as sess:
-                sess[CURR_USER_KEY] = self.uid1
-                
-            res = client.post("/messages/new", data={"text": "Hello"})
-            html = res.get_data(as_text=True)
-
-            self.assertEqual(res.status_code, 302)
-            msg = Message.query.filter_by(text='Hello').first()
-            self.assertEqual(msg.text, "Hello")
             
+    #         resp = c.get('/messages/99999999')
+
+    #         self.assertEqual(resp.status_code, 404)
+            
+            
+    def test_message_delete(self):
     
-    def test_profile_page2(self):
-        """ Making sure that the profile page renders the messages correctly. """
+        m = Message(
+            id=1234,
+            text="a test message",
+            user_id=self.uid1
+        )
+        db.session.add(m)
+        db.session.commit()
 
-        with self.client as client:
-            msg = Message(text="My first post", timestamp="11 August 2020")
-            self.u1.messages.append(msg)
-            db.session.commit()
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
+
+            resp = c.post("/messages/1234/delete", follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+
+            m = Message.query.get(1234)
+            self.assertIsNone(m)
             
-            res = self.client.get(f"/users/{self.uid1}")
-            html = res.get_data(as_text=True)
-            
-            self.assertEqual(res.status_code, 200)
-            self.assertIn("<p>My first post</p>", html)
-            self.assertIn('<span class="text-muted">11 August 2020</span>', html)
