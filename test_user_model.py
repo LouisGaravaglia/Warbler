@@ -132,7 +132,7 @@ class UserModelTestCase(TestCase):
         self.assertFalse(u3.authenticate("hawk12", "kawkaw"))
     
     def test_invalid_username_signup(self):
-        
+        """Testing to check in an IntegrityError is thrown when a non valild Username is present"""
         
         invalid = User.signup(None, "test@test.com", "password", None)
         uid = 123456789
@@ -140,6 +140,25 @@ class UserModelTestCase(TestCase):
         with self.assertRaises(IntegrityError) as context:
             db.session.commit()
             
+            
+    def test_invalid_email_signup(self):
+        """Testing to check in an IntegrityError is thrown when a non valild email is present"""
+
+        invalid = User.signup("WillSmith", None, "password", None)
+        uid = 123456789
+        invalid.id = uid
+        with self.assertRaises(IntegrityError) as context:
+            db.session.commit()
+            
+            
+    def test_invalid_password_signup(self):
+        """Testing to check in an ValueError is thrown when a empty password is present"""
+    
+        with self.assertRaises(ValueError) as context:
+            User.signup("WillSmith", "FreshPrince@gmail.com", "", None)
+           
+        with self.assertRaises(ValueError) as context:
+            User.signup("testtest", "email@email.com", None, None)
 
 
         
