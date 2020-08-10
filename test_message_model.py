@@ -55,11 +55,15 @@ class MessageModelTestCase(TestCase):
     def test_message_model(self):
         """Does basic model work?"""
 
-        msg = Message(text="My first post")
+        msg = Message(text="My first post", timestamp="11 August 2020")
         self.u1.messages.append(msg)
         db.session.commit()
 
         self.assertEqual("My first post", self.u1.messages[0].text)
+        self.assertEqual(len(self.u1.messages), 1)
+        self.assertEqual(self.uid1, self.u1.messages[0].user_id)
+        self.assertEqual(msg.timestamp, self.u1.messages[0].timestamp)
+        
         
 
     # Does the repr method work as expected?
