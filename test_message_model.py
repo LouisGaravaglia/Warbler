@@ -64,15 +64,19 @@ class MessageModelTestCase(TestCase):
         self.assertEqual(self.uid1, self.u1.messages[0].user_id)
         self.assertEqual(msg.timestamp, self.u1.messages[0].timestamp)
         
-        
+    
+    def test_message_likes(self):
+        """Testing to see if likeing a message works."""
 
-    # Does the repr method work as expected?
-    # Does is_following successfully detect when user1 is following user2?
-    # Does is_following successfully detect when user1 is not following user2?
-    # Does is_followed_by successfully detect when user1 is followed by user2?
-    # Does is_followed_by successfully detect when user1 is not followed by user2?
-    # Does User.create successfully create a new user given valid credentials?
-    # Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?
-    # Does User.authenticate successfully return a user when given a valid username and password?
-    # Does User.authenticate fail to return a user when the username is invalid?
-    # Does User.authenticate fail to return a user when the password is invalid?
+        msg = Message(text="My first post", timestamp="11 August 2020")
+        self.u1.messages.append(msg)
+        db.session.commit()
+        
+        self.u2.likes.append(msg)
+        
+        self.assertEqual("My first post", self.u2.likes[0].text)
+        self.assertEqual(self.uid1, self.u2.likes[0].user_id)
+        self.assertEqual(len(self.u2.likes), 1)
+     
+        
+        
