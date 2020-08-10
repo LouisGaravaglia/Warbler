@@ -7,6 +7,7 @@
 
 import os
 from unittest import TestCase
+from sqlalchemy.exc import IntegrityError
 
 from models import db, User, Message, Follows
 
@@ -59,6 +60,13 @@ class UserModelTestCase(TestCase):
         self.uid2 = uid2
 
         self.client = app.test_client()
+        
+
+    def tearDown(self):
+        res = super().tearDown()
+        db.session.rollback()
+        return res
+
         
 
     def test_user_model(self):
@@ -122,7 +130,17 @@ class UserModelTestCase(TestCase):
         self.assertTrue(u3.authenticate("hawk123", "kawkaw"))
         self.assertFalse(u3.authenticate("hawk123", "meow"))
         self.assertFalse(u3.authenticate("hawk12", "kawkaw"))
+    
+    def test_invalid_username_signup(self):
         
+        
+        invalid = User.signup(None, "test@test.com", "password", None)
+        uid = 123456789
+        invalid.id = uid
+        with self.assertRaises(IntegrityError) as context:
+            db.session.commit()
+            
+
 
         
 
