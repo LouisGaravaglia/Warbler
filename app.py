@@ -152,8 +152,6 @@ def users_show(user_id):
 
     user = User.query.get_or_404(user_id)
 
-    # snagging messages in order from the database;
-    # user.messages won't be in order by default
     messages = (Message
                 .query
                 .filter(Message.user_id == user_id)
@@ -161,6 +159,16 @@ def users_show(user_id):
                 .limit(100)
                 .all())
     return render_template('users/show.html', user=user, messages=messages)
+
+# FIXME:
+@app.route('/users/likes')
+def show_likes():
+    """Show user profile."""
+
+    likes = g.user.likes
+
+  
+    return render_template('users/likes.html', likes=likes)
 
 
 @app.route('/users/<int:user_id>/following')
@@ -216,7 +224,7 @@ def stop_following(follow_id):
 
     return redirect(f"/users/{g.user.id}/following")
 
-# FIXME:
+
 @app.route("/users/add_like/<int:message_id>", methods=['POST'])
 def add_like(message_id):
     """Add the liked message user id to a list."""
