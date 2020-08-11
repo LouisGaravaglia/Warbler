@@ -88,117 +88,117 @@ class MessageViewTestCase(TestCase):
         return res
     
 
-    # def test_profile_page_no_following(self):
-    #     """ Making sure that the profile page renders the correct users. """
+    def test_profile_page_no_following(self):
+        """ Making sure that the profile page renders the correct users. """
         
-    #     m1 = Message(
-    #         id=1111,
-    #         text="a test message1",
-    #         user_id=self.uid1
-    #     )
+        m1 = Message(
+            id=1111,
+            text="a test message1",
+            user_id=self.uid1
+        )
 
-    #     db.session.add(m1)     
-    #     db.session.commit()
+        db.session.add(m1)     
+        db.session.commit()
 
-    #     with self.client as client:
-    #         with client.session_transaction() as sess:
-    #             sess[CURR_USER_KEY] = self.uid1
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
                 
-    #         res = client.get("/")
-    #         html = res.get_data(as_text=True)
+            res = client.get("/")
+            html = res.get_data(as_text=True)
             
-    #         msg1 = Message.query.get(1111)
+            msg1 = Message.query.get(1111)
 
-    #         self.assertEqual(res.status_code, 200)
-    #         self.assertIn(f"<p>{msg1.text}</p>", html)
+            self.assertEqual(res.status_code, 200)
+            self.assertIn(f"<p>{msg1.text}</p>", html)
             
             
-    # def test_users_page(self):
-    #     """ Making sure that the users page renders all users. """
+    def test_users_page(self):
+        """ Making sure that the users page renders all users. """
 
-    #     with self.client as client:
-    #         with client.session_transaction() as sess:
-    #             sess[CURR_USER_KEY] = self.uid1  
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1  
         
-    #         res = client.get("/users")
-    #         html = res.get_data(as_text=True)
+            res = client.get("/users")
+            html = res.get_data(as_text=True)
 
-    #         self.assertEqual(res.status_code, 200)
-    #         self.assertIn("@newtest1", html)
-    #         self.assertIn("@newtest2", html)
-    #         self.assertIn("@newtest3", html)
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("@newtest1", html)
+            self.assertIn("@newtest2", html)
+            self.assertIn("@newtest3", html)
             
     
-    # def test_users_page_posts(self):
-    #     """ Making sure that the users page only renders their posts. """
+    def test_users_page_posts(self):
+        """ Making sure that the users page only renders their posts. """
 
-    #     with self.client as client:
-    #         with client.session_transaction() as sess:
-    #             sess[CURR_USER_KEY] = self.uid1
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
             
-    #         m2 = Message(
-    #         id=2222,
-    #         text="a test message2",
-    #         user_id=self.uid2
-    #     )
-    #         db.session.add(m2)      
-    #         db.session.commit() 
+            m2 = Message(
+            id=2222,
+            text="a test message2",
+            user_id=self.uid2
+        )
+            db.session.add(m2)      
+            db.session.commit() 
           
-    #         res = client.get(f"/users/{self.uid2}")
-    #         html = res.get_data(as_text=True)
+            res = client.get(f"/users/{self.uid2}")
+            html = res.get_data(as_text=True)
         
-    #         self.assertEqual(res.status_code, 200)
-    #         self.assertIn("a test message2", html)
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("a test message2", html)
     
     
-    # def test_is_following_users(self):
-    #     """Testing to make sure the users appear of those their following"""
+    def test_is_following_users(self):
+        """Testing to make sure the users appear of those their following"""
         
-    #     self.u1.following.append(self.u2)
-    #     db.session.commit()
+        self.u1.following.append(self.u2)
+        db.session.commit()
         
-    #     with self.client as client:
-    #         with client.session_transaction() as sess:
-    #             sess[CURR_USER_KEY] = self.uid1
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
         
-    #         res = client.get(f"/users/{self.uid1}/following")
-    #         html = res.get_data(as_text=True)
+            res = client.get(f"/users/{self.uid1}/following")
+            html = res.get_data(as_text=True)
     
-    #         self.assertEqual(res.status_code, 200)
-    #         self.assertIn("@newtest2", html)
-    #         self.assertIn("@newtest1", html)
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("@newtest2", html)
+            self.assertIn("@newtest1", html)
             
     
-    # def test_followers(self):
-    #     """Testing to make sure the users appear for those who are following user"""
+    def test_followers(self):
+        """Testing to make sure the users appear for those who are following user"""
         
-    #     self.u1.followers.append(self.u2)
-    #     db.session.commit()
+        self.u1.followers.append(self.u2)
+        db.session.commit()
         
-    #     with self.client as client:
-    #         with client.session_transaction() as sess:
-    #             sess[CURR_USER_KEY] = self.uid1
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
         
-    #         res = client.get(f"/users/{self.uid1}/followers")
-    #         html = res.get_data(as_text=True)
+            res = client.get(f"/users/{self.uid1}/followers")
+            html = res.get_data(as_text=True)
     
-    #         self.assertEqual(res.status_code, 200)
-    #         self.assertIn("@newtest2", html)
-    #         self.assertIn("@newtest1", html)
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("@newtest2", html)
+            self.assertIn("@newtest1", html)
             
             
-    # def test_users_search(self):
+    def test_users_search(self):
         
-    #     with self.client as client:
+        with self.client as client:
             
-    #         res = client.get("/users?q=test")
-    #         html = res.get_data(as_text=True)
+            res = client.get("/users?q=test")
+            html = res.get_data(as_text=True)
 
-    #         self.assertIn("@newtest1", html)
-    #         self.assertIn("@newtest2", html)
-    #         self.assertIn("@newtest3", html)               
+            self.assertIn("@newtest1", html)
+            self.assertIn("@newtest2", html)
+            self.assertIn("@newtest3", html)               
 
-    #         self.assertNotIn("@weirdname", html)
+            self.assertNotIn("@weirdname", html)
 
 
     def setup_likes(self):
