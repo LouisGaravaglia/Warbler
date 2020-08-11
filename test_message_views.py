@@ -60,9 +60,7 @@ class MessageViewTestCase(TestCase):
 
         self.u2 = u2
         self.uid2 = uid2
-        
-        
-        
+          
         self.client = app.test_client()
         
         
