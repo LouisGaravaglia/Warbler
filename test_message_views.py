@@ -193,5 +193,8 @@ class MessageViewTestCase(TestCase):
             self.assertIn("Access unauthorized", str(resp.data))
 
             m = Message.query.get(1234)
-            self.assertIsNotNone(m)   
+            self.assertIsNotNone(m) 
+            
+    
+  
             

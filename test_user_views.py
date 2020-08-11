@@ -53,12 +53,17 @@ class MessageViewTestCase(TestCase):
         u3 = User.signup("newtest3", "newemail3@email.com", "newpassword", None)
         uid3 = 3003
         u3.id = uid3
+        
+        u4 = User.signup("weirdname", "weirdemail@email.com", "newpassword", None)
+        uid4 = 4004
+        u4.id = uid4
 
         db.session.commit()
 
         u1 = User.query.get(uid1)
         u2 = User.query.get(uid2)
         u3 = User.query.get(uid3)
+        u4 = User.query.get(uid4)
 
         self.u1 = u1
         self.uid1 = uid1
@@ -68,6 +73,9 @@ class MessageViewTestCase(TestCase):
         
         self.u3 = u3
         self.uid3 = uid3
+        
+        self.u4 = u4
+        self.uid4 = uid4
          
         self.client = app.test_client()
         
@@ -158,19 +166,92 @@ class MessageViewTestCase(TestCase):
 
 
     def test_users_page(self):
-        """ Making sure that the profile page renders the correct users. """
+        """ Making sure that the users page renders all users. """
 
         with self.client as client:
             with client.session_transaction() as sess:
-                sess[CURR_USER_KEY] = self.uid1
-                
+                sess[CURR_USER_KEY] = self.uid1  
+        
             res = client.get("/users")
             html = res.get_data(as_text=True)
-        
 
             self.assertEqual(res.status_code, 200)
             self.assertIn("@newtest1", html)
             self.assertIn("@newtest2", html)
             self.assertIn("@newtest3", html)
+            
+    
+    def test_users_page_posts(self):
+        """ Making sure that the users page only renders their posts. """
+
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
+            
+            m2 = Message(
+            id=2222,
+            text="a test message2",
+            user_id=self.uid2
+        )
+            db.session.add(m2)      
+            db.session.commit() 
+          
+            res = client.get(f"/users/{self.uid2}")
+            html = res.get_data(as_text=True)
+        
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("a test message2", html)
+    
+    
+    def test_is_following_users(self):
+        """Testing to make sure the users appear of those their following"""
+        
+        self.u1.following.append(self.u2)
+        db.session.commit()
+        
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
+        
+            res = client.get(f"/users/{self.uid1}/following")
+            html = res.get_data(as_text=True)
+    
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("@newtest2", html)
+            self.assertIn("@newtest1", html)
+            
+    
+    def test_followers(self):
+        """Testing to make sure the users appear for those who are following user"""
+        
+        self.u1.followers.append(self.u2)
+        db.session.commit()
+        
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
+        
+            res = client.get(f"/users/{self.uid1}/followers")
+            html = res.get_data(as_text=True)
+    
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("@newtest2", html)
+            self.assertIn("@newtest1", html)
+            
+            
+    def test_users_search(self):
+        
+        with self.client as client:
+            
+            res = client.get("/users?q=test")
+            html = res.get_data(as_text=True)
+
+            self.assertIn("@newtest1", html)
+            self.assertIn("@newtest2", html)
+            self.assertIn("@newtest3", html)               
+
+            self.assertNotIn("@weirdname", html)
+
+
          
     
