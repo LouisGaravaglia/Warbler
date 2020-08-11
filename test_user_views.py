@@ -78,7 +78,7 @@ class MessageViewTestCase(TestCase):
         return res
     
 
-    def test_profile_page_for_users(self):
+    def test_profile_page_no_following(self):
         """ Making sure that the profile page renders the correct users. """
         
         m1 = Message(
@@ -87,22 +87,7 @@ class MessageViewTestCase(TestCase):
             user_id=self.uid1
         )
 
-        
-        m2 = Message(
-            id=2222,
-            text="a test message2",
-            user_id=self.uid2
-        )
-
-        
-        m3 = Message(
-            id=3333,
-            text="a test message3",
-            user_id=self.uid3
-        )
-        db.session.add(m1) 
-        db.session.add(m2) 
-        db.session.add(m3)      
+        db.session.add(m1)     
         db.session.commit()
 
         with self.client as client:
@@ -111,8 +96,81 @@ class MessageViewTestCase(TestCase):
                 
             res = client.get("/")
             html = res.get_data(as_text=True)
+            
+            msg1 = Message.query.get(1111)
 
             self.assertEqual(res.status_code, 200)
-            # msg = Message.query.filter_by(text='Hello').first()
-            # self.assertEqual(msg.text, "Hello")
+            self.assertIn(f"<p>{msg1.text}</p>", html)
             
+            
+    # def test_profile_page_following(self):
+    #     """ Making sure that the profile page renders the messages of those user is following. """
+        
+    #     m1 = Message(
+    #         id=1111,
+    #         text="a test message1",
+    #         user_id=self.uid1
+    #     )
+
+        
+    #     m2 = Message(
+    #         id=2222,
+    #         text="a test message2",
+    #         user_id=self.uid2
+    #     )
+
+        
+    #     m3 = Message(
+    #         id=3333,
+    #         text="a test message3",
+    #         user_id=self.uid3
+    #     )
+    #     db.session.add(m1) 
+    #     db.session.add(m2) 
+    #     db.session.add(m3)      
+    #     db.session.commit()
+
+    #     with self.client as client:
+    #         with client.session_transaction() as sess:
+    #             sess[CURR_USER_KEY] = self.uid1
+                
+    #         res = client.get("/")
+    #         html = res.get_data(as_text=True)
+            
+    #         msg1 = Message.query.get(1111)
+    #         msg2 = Message.query.get(2222)
+    #         msg3 = Message.query.get(3333)
+            
+    #         # user1 = User.query.get(self.uid1)
+    #         # user2 = User.query.get(self.uid2)
+    #         # user3 = User.query.get(self.uid3)
+    #         self.u1.following.append(self.u2)
+    #         db.session.commit()
+    #         self.u1.following.append(self.u3)
+    #         db.session.commit()
+
+    #         self.assertEqual(res.status_code, 200)
+    #         self.assertIn(f"<p>{msg1.text}</p>", html)
+    #         self.assertIn(f"<p>{msg2.text}</p>", html)
+    #         self.assertIn(f"<p>{msg3.text}</p>", html)
+    #         # msg = Message.query.filter_by(text='Hello').first()
+    #         # self.assertEqual(msg.text, "Hello")
+
+
+    def test_users_page(self):
+        """ Making sure that the profile page renders the correct users. """
+
+        with self.client as client:
+            with client.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.uid1
+                
+            res = client.get("/users")
+            html = res.get_data(as_text=True)
+        
+
+            self.assertEqual(res.status_code, 200)
+            self.assertIn("@newtest1", html)
+            self.assertIn("@newtest2", html)
+            self.assertIn("@newtest3", html)
+         
+    
